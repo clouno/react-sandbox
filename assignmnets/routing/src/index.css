@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.Link {
+  display: inline-block;
+  margin: 10px;
+  text-decoration: none;
+  color: black;
+}
+.Link:hover {
+  font-weight: bold;
+  color: chocolate;
+}
+.selected {
+  font-weight: bold;
+  color: chocolate;
+}

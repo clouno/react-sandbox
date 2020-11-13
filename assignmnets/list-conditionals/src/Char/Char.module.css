@@ -1,0 +1,13 @@
+.Char {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    padding: 16px;
+    margin: 2px;
+    text-align: 16px;
+    border: 1px solid block;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    font-size: x-large;
+}
