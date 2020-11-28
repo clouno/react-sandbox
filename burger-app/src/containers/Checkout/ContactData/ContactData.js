@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import axios from '../../../axios-orders'
 
 import classes from './ContactData.module.css';
@@ -6,6 +7,9 @@ import classes from './ContactData.module.css';
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+
+import * as actions from '../../../store/actions/'
 
 class ContactData extends Component {
 
@@ -72,7 +76,8 @@ class ContactData extends Component {
                     placeholder: 'Your E-Mail'
                 },
                 validation: {
-                    required: true
+                    required: true,
+                    isEmail: true
                 },
                 valid: false,
                 touched: false,
@@ -92,14 +97,11 @@ class ContactData extends Component {
                 value: 'fastest'
             }
         },
-        formIsValid: false,
-        loading: false
+        formIsValid: false
     }
 
     orderHandler = (event) => {
         event.preventDefault();
-
-        this.setState({loading: true});
 
         const formData = {};
 
@@ -113,11 +115,7 @@ class ContactData extends Component {
             orderData: formData
         }
         
-        axios.post('/orders.json', order)
-            .then(() => {
-                this.setState({ loading: false, purchasing: false });
-                this.props.history.push('/');
-            });        
+        this.props.onSubmitOrder(order);
     }
 
     checkValidity = (value, rules) => {
@@ -133,6 +131,11 @@ class ContactData extends Component {
 
         if (rules.maxLength) {
             isValid = value.length <= rules.maxLength && isValid;
+        }
+
+        if (rules.isEmail) {
+            const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            isValid = emailPattern.test(String(value).toLowerCase())
         }
 
         return isValid;
@@ -161,7 +164,7 @@ class ContactData extends Component {
 
         let form = <Spinner />;
 
-        if (!this.state.loading) {
+        if (!this.props.loading) {
             
             const formElements = [];
 
@@ -186,4 +189,18 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData;
+const mapStateToProps = (state) => {
+    return {
+        ingredients: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        loading: state.order.loading
+    }
+}
+
+const mapDispatchToPros = (dispatch) => {
+    return {
+        onSubmitOrder: (orderData) => dispatch(actions.purchaseBurger(orderData))  
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToPros)(withErrorHandler(ContactData, axios));
